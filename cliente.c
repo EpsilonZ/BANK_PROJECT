@@ -6,11 +6,14 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include "defs.h"
+#include <unistd.h>
+#include <termios.h>
 
 int operaciones=0;
 char *user;
 char *password;
 
+char getch();
 bool pagina_principal();
 void pagina_inicio();
 void obten_credenciales();
@@ -37,12 +40,31 @@ void obten_credenciales(){
 	printf(BLU "Introduce tu usuario y contraseña \n" RESET);	
 	user = malloc (4 * sizeof(char) );
 	password = malloc (4 * sizeof(char) );
-	printf("User :");
+	printf("User de 4 letras :");
 	scanf("%s", user);
 	fflush(stdout);
-	printf("Password :");
-	scanf("%s", password);
-	fflush(stdout);
+	printf("Password de 4 letras:");
+	int i=0;
+	while(i < 4){
+
+		//FIXME: error al introducir, no se imprimen bien los caracteres
+		char aux = getch();
+		if ( aux != 127 ){
+			password[i]=getch();
+			printf("*");
+			fflush(stdout);
+			++i;
+		}
+		else{
+			printf("DELETE KEY\n");
+			printf("\b");
+			fflush(stdout);
+			--i;
+		}
+	}
+	printf("\n");
+	//scanf("%s", password);
+	//fflush(stdout);
 }
 
 
@@ -107,3 +129,26 @@ void pagina_inicio(){
 		}
 	}
 }
+
+char getch(){
+
+    char buf=0;
+    struct termios old={0};
+    fflush(stdout);
+    if(tcgetattr(0, &old)<0)
+        perror("tcsetattr()");
+    old.c_lflag&=~ICANON;
+    old.c_lflag&=~ECHO;
+    old.c_cc[VMIN]=1;
+    old.c_cc[VTIME]=0;
+    if(tcsetattr(0, TCSANOW, &old)<0)
+        perror("tcsetattr ICANON");
+    if(read(0,&buf,1)<0)
+        perror("read()");
+    old.c_lflag|=ICANON;
+    old.c_lflag|=ECHO;
+    if(tcsetattr(0, TCSADRAIN, &old)<0)
+        perror ("tcsetattr ~ICANON");
+    //printf("%c\n",buf);
+    return buf;
+ }
