@@ -12,8 +12,7 @@
 int main(int argc, char *argv[]){
 
 	//TODO: ENCARGADO DE BUSCAR CUENTA en "base de datos"
-	//primer argumento es usuario
-	//segundo argumento es contraseña
+	
 	int status=0;	
 	if(argc==3){
 		char *user = argv[1];
@@ -33,13 +32,13 @@ int main(int argc, char *argv[]){
 			}
 		}
 		if(found){
-			printf("ENCONTRADO!\n");
+			//printf("ENCONTRADO!\n");
 			status=1;
 		}
 		free(credenciales);
 	}
 	else{
-		printf("ERROR\n");
+		//printf("ERROR\n");
 	}
 	exit(status);
 }

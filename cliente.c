@@ -6,6 +6,8 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include "defs.h"
+
+int operaciones=0;
 char *user;
 char *password;
 
@@ -16,15 +18,7 @@ void obten_credenciales();
 int main(int argc, char *argv[]){
 
 	//TODO: ENCARGADO DE PODER INTERACTUAR Y CUBRIR LAS NECESIDADES DEL CLIENTE
-	/*
-	printf(RED "red\n" RESET);
-  printf(GRN "green\n" RESET);
-  printf(YEL "yellow\n" RESET);
-  printf(BLU "blue\n" RESET);
-  printf(MAG "magenta\n" RESET);
-  printf(CYN "cyan\n" RESET);
-  printf(WHT "white\n" RESET);
-	*/
+	
 	bool correcto = pagina_principal();
 	if(correcto){
 		printf("Bienvenido %s !\n",user);
@@ -36,7 +30,7 @@ int main(int argc, char *argv[]){
 	}
 	free(password);
 	free(user);
-	
+	exit(operaciones);
 }
 
 void obten_credenciales(){
@@ -69,7 +63,6 @@ bool pagina_principal(){
 		}
 		int status;
 		waitpid(pid,&status,0);
-		//printf("El status es %d\n",status);
 		if(status==0){
 			--intentos;
 			if(intentos>0){
@@ -84,22 +77,32 @@ bool pagina_principal(){
 }
 
 void pagina_inicio(){
-	printf("Selecciona la operacion que quieres realizar \n");
-	printf("-------------------------------------------\n");
-	printf("Apreta la tecla S para saber tu saldo \n");
-	printf("Apreta la tecla I para introducir dinero \n");
-	printf("Apreta la tecla F para finalizar\n");
-	char letra = getchar();
+	printf(GRN "Selecciona la operacion que quieres realizar \n" RESET);
+	printf(GRN "-------------------------------------------\n" RESET);
+	printf(GRN "Apreta la tecla S para saber tu saldo \n" RESET);
+	printf(GRN "Apreta la tecla D para sacar dinero \n" RESET);
+	printf(GRN "Apreta la tecla I para introducir dinero \n" RESET);
+	printf(GRN "Apreta la tecla F para finalizar\n" RESET);
 	bool finished = false;
 	while ( !finished ){
-		if(letra=='s' || letra=='S'){
-			printf("Has elegido saber tu saldo\n");
+		char letra = getchar();
+		if(letra=='d' || letra== 'D'){
+			++operaciones;
+			printf(YEL "Has elegido sacar dinero\n" RESET );
+			//pedir cantidad y restarsela a su total
+		}
+		else if(letra=='s' || letra=='S'){
+			++operaciones;
+			printf(YEL "Has elegido saber tu saldo\n" RESET );
+			//buscar el usuario y enseñar su saldo
 		}
 		else if (letra=='i' || letra=='I'){
-			printf("Has elegido introducir dinero\n");
+			++operaciones;
+			printf(YEL "Has elegido introducir dinero\n" RESET);
+			//buscar su usuario y aumentarle la cantidad de dinero
 		}
 		else if(letra=='F' || letra=='f'){
-			printf("Muchas gracias por confiar en nosotros ! \n");
+			printf(YEL "Muchas gracias por confiar en nosotros ! \n" RESET);
 			finished = true;
 		}
 	}
