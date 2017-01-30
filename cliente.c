@@ -105,7 +105,7 @@ void pagina_inicio(){
 	printf(GRN "Apreta la tecla F para finalizar\n" RESET);
 	bool finished = false;
 	while ( !finished ){
-		char letra = getchar();
+		char letra = getch();
 		if(letra=='d' || letra== 'D'){
 			++operaciones;
 			printf(YEL "Has elegido sacar dinero\n" RESET );
