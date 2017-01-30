@@ -20,27 +20,30 @@ char getch();
 
 int main(int argc, char *argv[]){
 
-	//FIXME: cuando escribe en cuentas.txt el fichero se corrompe y por algo que todavia no se escribe caracteres "invalidos"
 	//TODO:Encargado de crear la cuenta
 	obten_credenciales();
-	int fd = open ("cuentas.txt", O_RDONLY | O_WRONLY );
-	printf("Oh dear, something went wrong with read()! %s\n", strerror(errno));
-	bool existe = false;
-	int llegits;
-	char credenciales[strlen(user) + strlen(password) + 1];
-	strcpy(credenciales,user);
-	strcat(credenciales,password);
-	char aux[8];
-	while (  (llegits = read (fd,&aux,8) ) > 0 && !existe){
-		if(strcmp(aux,credenciales) == 0){
-			printf("existe\n");
-			existe = true;
-		}
+	int pid = fork();
+	if ( pid == 0){
+		execlp("./administrador","./administrador", user, password, (char *) NULL);
+		exit(-1);
 	}
-	int exit_value = existe ? 1 : 0;
-	printf("%s\n",credenciales);	
-	if( ! existe ){	
+	int status;
+	waitpid(pid,&status,0);
+	int return_code = WIFEXITED(status) ? WEXITSTATUS(status) : WTERMSIG(status);
+	int exit_value=1;
+	if (return_code == 0){
+		//no existe
+		exit_value=0;
+		int fd = open ("cuentas.txt", O_RDONLY | O_WRONLY );
+		char credenciales[strlen(user) + strlen(password) + 1];
+		strcpy(credenciales,user);
+		strcat(credenciales,password);
+		lseek(fd,0,SEEK_END);
 		write(fd,&credenciales,strlen(credenciales)*sizeof(char));
+		close(fd);
+	}
+	else{
+		printf("EXISTE\n");
 	}
 	free(password);
 	free(user);
