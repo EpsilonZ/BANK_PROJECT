@@ -46,20 +46,18 @@ void obten_credenciales(){
 	printf("Password de 4 letras:");
 	int i=0;
 	while(i < 4){
-
-		//FIXME: error al introducir, no se imprimen bien los caracteres
 		char aux = getch();
 		if ( aux != 127 ){
-			password[i]=getch();
+			password[i] = aux;
 			printf("*");
 			fflush(stdout);
 			++i;
 		}
 		else{
-			printf("DELETE KEY\n");
-			printf("\b");
-			fflush(stdout);
-			--i;
+			if(i>0){
+				printf("\b \b");
+				--i;
+			}
 		}
 	}
 	printf("\n");
