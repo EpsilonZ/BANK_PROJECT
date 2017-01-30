@@ -10,7 +10,7 @@
 #include <termios.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-
+#include <errno.h>
 
 char *user;
 char *password;
@@ -24,24 +24,24 @@ int main(int argc, char *argv[]){
 	//TODO:Encargado de crear la cuenta
 	obten_credenciales();
 	int fd = open ("cuentas.txt", O_RDONLY | O_WRONLY );
+	printf("Oh dear, something went wrong with read()! %s\n", strerror(errno));
 	bool existe = false;
 	int llegits;
-	char *credenciales;
-	credenciales = malloc(strlen(user) + strlen(password) + 1);
+	char credenciales[strlen(user) + strlen(password) + 1];
 	strcpy(credenciales,user);
 	strcat(credenciales,password);
 	char aux[8];
 	while (  (llegits = read (fd,&aux,8) ) > 0 && !existe){
 		if(strcmp(aux,credenciales) == 0){
+			printf("existe\n");
 			existe = true;
 		}
 	}
 	int exit_value = existe ? 1 : 0;
 	printf("%s\n",credenciales);	
-	if( ! existe ){
-		write(fd,&credenciales,sizeof(credenciales));
+	if( ! existe ){	
+		write(fd,&credenciales,strlen(credenciales)*sizeof(char));
 	}
-	free(credenciales);
 	free(password);
 	free(user);
 	exit(exit_value);
